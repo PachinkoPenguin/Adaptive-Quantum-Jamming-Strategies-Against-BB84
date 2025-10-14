@@ -49,7 +49,48 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Basic Simulation
+### Command Line Interface
+
+The simulation can be run directly from the command line with different backend options:
+
+```bash
+# Run with classical backend (default)
+python bb84_foundation.py
+
+# Run with Qiskit backend
+python bb84_foundation.py --use-qiskit
+
+# Show help and available options
+python bb84_foundation.py --help
+```
+
+Each run performs three types of analysis:
+1. Basic simulation with selected backend
+2. Parameter sweep across different error and loss rates
+3. Comparison between classical and quantum backends
+
+### Output Structure
+
+The simulation generates several output files in the `bb84_output` directory:
+
+1. Basic Simulation Outputs:
+   - `protocol_execution.png`: Detailed log of the protocol execution
+   - `protocol_summary.png`: Summary statistics table
+   - `protocol_visualization.png`: Visualization of key generation pipeline
+   - `summary_report_TIMESTAMP.png`: Comprehensive summary report
+
+2. Parameter Sweep Outputs:
+   - `parameter_sweep_heatmap.png`: Three heatmaps showing QBER, Efficiency, and Security Status
+
+3. Backend Comparison Outputs:
+   - `backend_comparison.png`: Boxplots comparing QBER and Efficiency between backends
+
+Each run creates a timestamped directory `run_YYYYMMDD_HHMMSS/` containing the output files.
+
+### Programmatic Usage
+
+For programmatic use, you can import and use the classes directly:
+
 ```python
 from src.bb84_foundation import BB84Protocol
 
@@ -70,6 +111,55 @@ results = simulator.run_parameter_sweep(
     error_rates=[0.0, 0.05, 0.10]
 )
 ```
+
+### Understanding Results
+
+1. **QBER (Quantum Bit Error Rate)**:
+   - Values below 11% indicate secure key distribution
+   - Higher values may indicate eavesdropping or channel noise
+
+2. **Efficiency**:
+   - Shows the ratio of final key length to initial bits sent
+   - Affected by loss rate and error rate
+   - Typically ranges from 15% to 25%
+
+3. **Security Status**:
+   - Determined by QBER threshold of 11%
+   - Automated security assessment in reports
+   - Visual indicators in parameter sweep heatmaps
+
+### Noise Modeling and Channel Effects
+
+1. **Classical Backend**:
+   - Simple bit-flip error model
+   - Probabilistic photon loss
+   - Fast execution for initial testing
+
+2. **Qiskit Backend**:
+   - Realistic quantum noise modeling using `NoiseModel`
+   - Depolarizing channel errors
+   - Hardware-inspired noise effects
+   - Quantum circuit-level simulation
+
+### Visualization Features
+
+1. **Protocol Execution**:
+   - Real-time logging of protocol stages
+   - Quantum state preparation and measurement
+   - Basis reconciliation statistics
+   - Error detection and correction phases
+
+2. **Statistical Analysis**:
+   - Box plots for backend comparison
+   - Heatmaps for parameter sensitivity
+   - Key generation pipeline visualization
+   - Security threshold indicators
+
+3. **Report Generation**:
+   - Comprehensive summary reports
+   - Statistical metrics and analysis
+   - Security assessment
+   - Performance comparisons
 
 ## Research Context
 This implementation is part of a research paper investigating:
