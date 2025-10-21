@@ -87,6 +87,34 @@ The simulation generates several output files in the `bb84_output` directory:
 
 Each run creates a timestamped directory `run_YYYYMMDD_HHMMSS/` containing the output files.
 
+### CLI options (new)
+
+The main runner supports a few useful flags to control output and logging:
+
+- `--output-dir`: Path where run artifacts are saved (default: `bb84_output/`).
+- `--run-type`: Short label for the run (e.g., `standard`, `sweep`, `comparison`) used in output folder names.
+- `--log-level`: Logging verbosity (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Default is `INFO`.
+
+Example:
+
+```bash
+python src/main/bb84_main.py --output-dir bb84_output --run-type standard --log-level INFO
+```
+
+Each run now creates a descriptive folder name that includes the backend, run type, and timestamp. Inside the folder you'll find image files, a `run.log` containing run-time logs, and `summary.json` with run metadata and statistics.
+
+### summary.json schema
+
+Each run saves a small JSON file `summary.json` with the following keys:
+
+- `backend`: `classical` or `qiskit`
+- `run_type`: The `--run-type` value
+- `timestamp`: ISO 8601 timestamp of the run
+- `total_bits_sent`, `raw_key_length`, `final_key_length`, `qber`, `efficiency`
+- `channel_loss_rate`, `channel_error_rate`
+
+This file is intended for quick programmatic inspection of run results.
+
 ### Programmatic Usage
 
 For programmatic use, you can import and use the classes directly:

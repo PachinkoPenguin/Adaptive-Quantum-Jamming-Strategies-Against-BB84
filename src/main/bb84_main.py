@@ -18,6 +18,11 @@ from collections import Counter
 from abc import ABC, abstractmethod
 from datetime import datetime
 import os
+import logging
+import json
+
+# Module logger
+logger = logging.getLogger("bb84")
 
 # Try to import Qiskit (optional)
 QISKIT_AVAILABLE = False
@@ -233,12 +238,41 @@ else:
 class OutputManager:
     """Manages all output as images instead of terminal text"""
     
-    def __init__(self, output_dir: str = OUTPUT_DIR):
+    def __init__(self, output_dir: str = OUTPUT_DIR, backend_type: str = "classical", run_type: str = "standard"):
+        """
+        Initialize OutputManager with more descriptive directory structure
+        Args:
+            output_dir: Base output directory
+            backend_type: Type of simulation backend ('classical' or 'qiskit')
+            run_type: Type of run ('standard', 'sweep', 'comparison', etc.)
+        """
         self.output_dir = output_dir
-        self.run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.run_dir = os.path.join(output_dir, f"run_{self.run_id}")
+        self.backend_type = backend_type
+        self.run_type = run_type
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Create a more descriptive run directory name
+        run_name = f"{backend_type}_{run_type}_run_{timestamp}"
+        self.run_dir = os.path.join(output_dir, run_name)
         os.makedirs(self.run_dir, exist_ok=True)
         self.log_data = []
+        # Setup a logger for this run
+        logger_name = f"bb84.{self.backend_type}.{self.run_type}.{timestamp}"
+        self.logger = logging.getLogger(logger_name)
+        self.logger.setLevel(logging.INFO)
+        # Avoid duplicate handlers
+        if not self.logger.handlers:
+            # File handler
+            fh = logging.FileHandler(os.path.join(self.run_dir, "run.log"))
+            fh.setLevel(logging.INFO)
+            formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+            fh.setFormatter(formatter)
+            self.logger.addHandler(fh)
+            # Console handler
+            ch = logging.StreamHandler()
+            ch.setLevel(logging.INFO)
+            ch.setFormatter(formatter)
+            self.logger.addHandler(ch)
         
     def log(self, text: str, category: str = "info"):
         """Add text to log buffer"""
@@ -275,10 +309,19 @@ class OutputManager:
             if y_position < 0.05:
                 break
         
-        plt.title(f"BB84 Protocol Log - {self.run_id}", fontsize=14, fontweight='bold')
-        filepath = os.path.join(self.run_dir, f"{filename}.png")
+        title = f"BB84 Protocol Log - {self.backend_type.capitalize()} {self.run_type.capitalize()}"
+        plt.title(title, fontsize=14, fontweight='bold')
+        
+        # Create descriptive filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        descriptive_filename = f"{self.backend_type}_{self.run_type}_{filename}_{timestamp}.png"
+        filepath = os.path.join(self.run_dir, descriptive_filename)
         plt.savefig(filepath, dpi=100, bbox_inches='tight', facecolor='white')
         plt.close()
+        try:
+            self.logger.info(f"Saved log image: {filepath}")
+        except Exception:
+            pass
         return filepath
     
     def create_summary_table(self, stats: Dict, filename: str = "summary"):
@@ -325,12 +368,35 @@ class OutputManager:
                 table[(i, 0)].set_facecolor(color)
                 table[(i, 1)].set_facecolor(color)
         
-        plt.title(f"BB84 Protocol Summary - {self.run_id}", 
-                 fontsize=14, fontweight='bold', pad=20)
+        title = f"BB84 Protocol Summary - {self.backend_type.capitalize()} {self.run_type.capitalize()}"
+        plt.title(title, fontsize=14, fontweight='bold', pad=20)
         
         filepath = os.path.join(self.run_dir, f"{filename}.png")
         plt.savefig(filepath, dpi=100, bbox_inches='tight', facecolor='white')
         plt.close()
+        try:
+            self.logger.info(f"Saved summary table image: {filepath}")
+        except Exception:
+            pass
+        return filepath
+
+    def save_metadata(self, stats: Dict, params: Dict = None, filename: str = "summary.json"):
+        """Save run metadata and statistics to JSON file next to outputs"""
+        data = {
+            "stats": stats,
+            "params": params or {},
+            "generated_at": datetime.now().isoformat(),
+        }
+        filepath = os.path.join(self.run_dir, filename)
+        try:
+            with open(filepath, "w") as f:
+                json.dump(data, f, indent=2)
+            self.logger.info(f"Saved metadata JSON: {filepath}")
+        except Exception as e:
+            try:
+                self.logger.error(f"Failed to save metadata JSON: {e}")
+            except Exception:
+                pass
         return filepath
 
 
@@ -468,7 +534,9 @@ class BB84Protocol:
     
     def __init__(self, 
                  backend: Optional[QuantumBackend] = None,
-                 use_qiskit: bool = False):
+                 use_qiskit: bool = False,
+                 output_dir: str = OUTPUT_DIR,
+                 run_type: str = "standard"):
         """
         Initialize BB84 protocol
         
@@ -483,10 +551,11 @@ class BB84Protocol:
             self.backend = QiskitBackend()
         else:
             self.backend = ClassicalBackend()
-        
+
         # Output manager for image generation
-        self.output_manager = OutputManager()
-        
+        backend_name = 'qiskit' if use_qiskit else 'classical'
+        self.output_manager = OutputManager(output_dir=output_dir, backend_type=backend_name, run_type=run_type)
+
         # Protocol components (initialized in setup)
         self.alice = None
         self.bob = None
@@ -548,6 +617,17 @@ class BB84Protocol:
         # Save outputs as images
         self.output_manager.save_log_image("protocol_execution")
         self.output_manager.create_summary_table(self.stats, "protocol_summary")
+        # Save metadata JSON with run parameters
+        try:
+            params = {
+                'num_bits': num_bits if 'num_bits' in locals() else None,
+                'channel_loss': self.channel.loss_rate if self.channel else None,
+                'channel_error': self.channel.error_rate if self.channel else None,
+                'backend': self.backend.get_name()
+            }
+            self.output_manager.save_metadata(self.stats, params=params)
+        except Exception:
+            pass
         
         return self.stats
     
@@ -821,9 +901,10 @@ class BB84Protocol:
 class BB84Simulator:
     """High-level simulator for running BB84 experiments"""
     
-    def __init__(self, use_qiskit: bool = False):
+    def __init__(self, use_qiskit: bool = False, output_dir: str = OUTPUT_DIR, run_type: str = "simulator"):
         self.use_qiskit = use_qiskit and QISKIT_AVAILABLE
-        self.output_manager = OutputManager()
+        backend_name = 'qiskit' if self.use_qiskit else 'classical'
+        self.output_manager = OutputManager(output_dir=output_dir, backend_type=backend_name, run_type=run_type)
         self.results_history = []
         
     def run_single_simulation(self,
@@ -831,9 +912,10 @@ class BB84Simulator:
                              channel_loss: float = 0.1,
                              channel_error: float = 0.02) -> Dict:
         """Run a single BB84 simulation"""
-        
-        print(f"   Using {'Qiskit' if self.use_qiskit else 'Classical'} backend")
-        protocol = BB84Protocol(use_qiskit=self.use_qiskit)
+        logger.info(f"Using {'Qiskit' if self.use_qiskit else 'Classical'} backend")
+        protocol = BB84Protocol(use_qiskit=self.use_qiskit, output_dir=self.output_manager.output_dir, run_type=self.output_manager.run_type)
+        # Ensure protocol writes into the same output tree
+        protocol.output_manager = self.output_manager
         protocol.setup(channel_loss, channel_error)
         stats = protocol.run_protocol(num_bits)
         
@@ -851,9 +933,8 @@ class BB84Simulator:
                            error_rates: List[float] = None,
                            trials_per_config: int = 3) -> Dict:
         """Run simulations across parameter space"""
-        
-        print(f"   Using {'Qiskit' if self.use_qiskit else 'Classical'} backend for parameter sweep")
-        print(f"   Running {trials_per_config} trials for each configuration")
+        logger.info(f"Using {'Qiskit' if self.use_qiskit else 'Classical'} backend for parameter sweep")
+        logger.info(f"Running {trials_per_config} trials for each configuration")
         
         if loss_rates is None:
             loss_rates = [0.0, 0.05, 0.1, 0.15, 0.2]
@@ -946,14 +1027,13 @@ class BB84Simulator:
     
     def compare_backends(self, num_bits: int = 1000, trials: int = 5):
         """Compare classical vs Qiskit backends"""
-        
         results = {'Classical': [], 'Qiskit': []}
-        
-        print(f"   Running {trials} trials for each backend")
-        print("   Starting Classical backend trials...")
+
+        logger.info(f"Running {trials} trials for each backend")
+        logger.info("Starting Classical backend trials...")
         # Run with classical backend
         for i in range(trials):
-            print(f"      Classical trial {i+1}/{trials}")
+            logger.info(f"Classical trial {i+1}/{trials}")
             protocol = BB84Protocol(use_qiskit=False)
             protocol.setup(0.1, 0.02)
             stats = protocol.run_protocol(num_bits)
@@ -961,9 +1041,9 @@ class BB84Simulator:
         
         # Run with Qiskit backend if available
         if QISKIT_AVAILABLE:
-            print("\n   Starting Qiskit backend trials...")
+            logger.info("Starting Qiskit backend trials...")
             for i in range(trials):
-                print(f"      Qiskit trial {i+1}/{trials}")
+                logger.info(f"Qiskit trial {i+1}/{trials}")
                 protocol = BB84Protocol(use_qiskit=True)
                 protocol.setup(0.1, 0.02)
                 stats = protocol.run_protocol(num_bits)
@@ -1108,21 +1188,30 @@ def main():
     parser = argparse.ArgumentParser(description='BB84 Quantum Key Distribution Protocol Simulator')
     parser.add_argument('--use-qiskit', action='store_true', 
                       help='Use Qiskit backend instead of classical simulation')
+    parser.add_argument('--output-dir', type=str, default=OUTPUT_DIR,
+                      help='Base output directory for run artifacts')
+    parser.add_argument('--run-type', type=str, default='standard',
+                      help='Run type descriptor (standard, sweep, comparison)')
+    parser.add_argument('--log-level', type=str, default='INFO',
+                      choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
+                      help='Logging level')
     args = parser.parse_args()
-    
-    print("\n" + "="*60)
-    print("BB84 QUANTUM KEY DISTRIBUTION - HYBRID IMPLEMENTATION")
-    print("="*60)
-    print(f"Output directory: {OUTPUT_DIR}")
-    print(f"Qiskit available: {QISKIT_AVAILABLE}")
-    print(f"Selected backend: {'Qiskit' if args.use_qiskit else 'Classical'}")
-    print("="*60)
+    # Configure module logger level
+    numeric_level = getattr(logging, args.log_level.upper(), logging.INFO)
+    logger.setLevel(numeric_level)
+    # Root logger basic config to ensure console output
+    logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    logger.info("BB84 QUANTUM KEY DISTRIBUTION - HYBRID IMPLEMENTATION")
+    logger.info(f"Output directory: {args.output_dir}")
+    logger.info(f"Qiskit available: {QISKIT_AVAILABLE}")
+    logger.info(f"Selected backend: {'Qiskit' if args.use_qiskit else 'Classical'}")
     
     # Create simulator
-    simulator = BB84Simulator(use_qiskit=args.use_qiskit)
+    simulator = BB84Simulator(use_qiskit=args.use_qiskit, output_dir=args.output_dir, run_type=args.run_type)
     
     # Run basic simulation
-    print("\n1. Running basic simulation...")
+    logger.info("1. Running basic simulation...")
     stats = simulator.run_single_simulation(
         num_bits=1000,
         channel_loss=0.1,
@@ -1131,31 +1220,28 @@ def main():
     
     # Create summary report
     report_path = create_summary_report(stats)
-    print(f"   Summary report saved: {report_path}")
+    logger.info(f"Summary report saved: {report_path}")
     
     # Run parameter sweep
-    print("\n2. Running parameter sweep...")
+    logger.info("2. Running parameter sweep...")
     sweep_results = simulator.run_parameter_sweep(
         num_bits=500,
         loss_rates=[0.0, 0.1, 0.2],
         error_rates=[0.0, 0.05, 0.10],
         trials_per_config=2
     )
-    print("   Parameter sweep complete")
+    logger.info("Parameter sweep complete")
     
     # Compare backends if Qiskit available
     if QISKIT_AVAILABLE:
-        print("\n3. Comparing backends...")
+        logger.info("3. Comparing backends...")
         comparison = simulator.compare_backends(num_bits=100, trials=3)
-        print("   Backend comparison complete")
+        logger.info("Backend comparison complete")
     
-    print("\n" + "="*60)
-    print("SIMULATION COMPLETE")
-    print(f"All results saved in: {OUTPUT_DIR}")
-    print("="*60)
-    print("\nReady for quantum jamming implementation!")
-    print("Next step: Extend QuantumChannel class with Eve's intervention")
-    print("="*60)
+    logger.info("SIMULATION COMPLETE")
+    logger.info(f"All results saved in: {OUTPUT_DIR}")
+    logger.info("Ready for quantum jamming implementation!")
+    logger.info("Next step: Extend QuantumChannel class with Eve's intervention")
 
 
 if __name__ == "__main__":

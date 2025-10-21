@@ -12,6 +12,7 @@ from typing import List, Tuple, Dict, Optional
 from enum import Enum
 import matplotlib.pyplot as plt
 from collections import Counter
+import logging
 
 # ============================================================================
 # FUNDAMENTAL QUANTUM COMPONENTS
@@ -66,6 +67,9 @@ class Photon:
             # Different basis - random result (50% probability)
             return random.randint(0, 1)
 
+# Module logger
+logger = logging.getLogger(__name__)
+
 
 # ============================================================================
 # ALICE - QUANTUM TRANSMITTER
@@ -89,13 +93,13 @@ class Alice:
     def generate_random_bits(self, n: int) -> List[int]:
         """Generate n random bits for transmission"""
         self.bits = [random.randint(0, 1) for _ in range(n)]
-        print(f"{self.name}: Generated {n} random bits")
+        logger.info(f"{self.name}: Generated {n} random bits")
         return self.bits
 
     def choose_random_bases(self, n: int) -> List[Basis]:
         """Choose random basis for each bit"""
         self.bases = [Basis.random() for _ in range(n)]
-        print(f"{self.name}: Chose {n} random bases")
+        logger.info(f"{self.name}: Chose {n} random bases")
         return self.bases
 
     def prepare_photons(self) -> List[Photon]:
@@ -110,12 +114,12 @@ class Alice:
             photon = Photon(bit, basis)
             self.sent_photons.append(photon)
 
-        print(f"{self.name}: Prepared {len(self.sent_photons)} photons")
+        logger.info(f"{self.name}: Prepared {len(self.sent_photons)} photons")
         return self.sent_photons
 
     def announce_bases(self) -> List[Basis]:
         """Publicly announce bases used (classical channel)"""
-        print(f"{self.name}: Announcing bases publicly")
+        logger.info(f"{self.name}: Announcing bases publicly")
         return self.bases
 
 
@@ -141,7 +145,7 @@ class Bob:
     def choose_random_bases(self, n: int) -> List[Basis]:
         """Choose random measurement basis for each photon"""
         self.bases = [Basis.random() for _ in range(n)]
-        print(f"{self.name}: Chose {n} random measurement bases")
+        logger.info(f"{self.name}: Chose {n} random measurement bases")
         return self.bases
 
     def measure_photons(self, photons: List[Photon]) -> List[int]:
@@ -157,13 +161,12 @@ class Bob:
         for photon, basis in zip(photons, self.bases):
             measured_bit = photon.measure(basis)
             self.measured_bits.append(measured_bit)
-
-        print(f"{self.name}: Measured {len(self.measured_bits)} photons")
+        logger.info(f"{self.name}: Measured {len(self.measured_bits)} photons")
         return self.measured_bits
 
     def announce_bases(self) -> List[Basis]:
         """Publicly announce measurement bases (classical channel)"""
-        print(f"{self.name}: Announcing measurement bases publicly")
+        logger.info(f"{self.name}: Announcing measurement bases publicly")
         return self.bases
 
 
@@ -220,10 +223,10 @@ class QuantumChannel:
                 transmitted_photons.append(photon)
                 self.transmitted_count += 1
 
-        print(
+        logger.info(
             f"{self.name}: Transmitted {self.transmitted_count}/{len(photons)} photons"
         )
-        print(f"  - Lost: {self.lost_count}, Errors: {self.error_count}")
+        logger.info(f"  - Lost: {self.lost_count}, Errors: {self.error_count}")
 
         return transmitted_photons
 
@@ -272,9 +275,9 @@ class BB84Protocol:
         Returns:
             Dictionary with protocol results and statistics
         """
-        print("=" * 60)
-        print("STARTING BB84 PROTOCOL")
-        print("=" * 60)
+        logger.info("=" * 60)
+        logger.info("STARTING BB84 PROTOCOL")
+        logger.info("=" * 60)
 
         # Phase 1: Quantum Transmission
         self._quantum_transmission_phase(num_bits)
@@ -294,15 +297,15 @@ class BB84Protocol:
         # Calculate statistics
         stats = self._calculate_statistics()
 
-        print("\n" + "=" * 60)
-        print("BB84 PROTOCOL COMPLETED")
-        print("=" * 60)
+        logger.info("\n" + "=" * 60)
+        logger.info("BB84 PROTOCOL COMPLETED")
+        logger.info("=" * 60)
 
         return stats
 
     def _quantum_transmission_phase(self, num_bits: int):
         """Phase 1: Quantum transmission of photons"""
-        print("\n--- PHASE 1: QUANTUM TRANSMISSION ---")
+        logger.info("\n--- PHASE 1: QUANTUM TRANSMISSION ---")
 
         # Alice prepares and sends
         alice_bits = self.alice.generate_random_bits(num_bits)
@@ -325,7 +328,7 @@ class BB84Protocol:
 
     def _basis_reconciliation_phase(self):
         """Phase 2: Public comparison of bases (sifting)"""
-        print("\n--- PHASE 2: BASIS RECONCILIATION (SIFTING) ---")
+        logger.info("\n--- PHASE 2: BASIS RECONCILIATION (SIFTING) ---")
 
         # Get bases for valid (non-lost) photons
         alice_bases_valid = [self.alice.bases[i] for i in self.valid_indices]
@@ -343,16 +346,16 @@ class BB84Protocol:
         ]
         self.raw_key_bob = [self.bob.measured_bits[i] for i in matching_bases]
 
-        print(f"Matching bases: {len(matching_bases)}/{len(alice_bases_valid)}")
-        print(f"Sifting efficiency: {len(matching_bases) / len(self.alice.bits):.2%}")
-        print(f"Raw key length: {len(self.raw_key_alice)} bits")
+        logger.info(f"Matching bases: {len(matching_bases)}/{len(alice_bases_valid)}")
+        logger.info(f"Sifting efficiency: {len(matching_bases) / len(self.alice.bits):.2%}")
+        logger.info(f"Raw key length: {len(self.raw_key_alice)} bits")
 
     def _error_estimation_phase(self):
         """Phase 3: Estimate quantum bit error rate (QBER)"""
-        print("\n--- PHASE 3: ERROR ESTIMATION ---")
+        logger.info("\n--- PHASE 3: ERROR ESTIMATION ---")
 
         if len(self.raw_key_alice) == 0:
-            print("No matching bases found!")
+            logger.warning("No matching bases found!")
             self.qber = 1.0
             return
 
@@ -368,13 +371,13 @@ class BB84Protocol:
 
         # Calculate QBER
         self.qber = errors / sample_size if sample_size > 0 else 0
-        print(f"Sampled {sample_size} bits for error estimation")
-        print(f"Found {errors} errors")
-        print(f"QBER = {self.qber:.2%}")
+        logger.info(f"Sampled {sample_size} bits for error estimation")
+        logger.info(f"Found {errors} errors")
+        logger.info(f"QBER = {self.qber:.2%}")
 
         # Security check
         if self.qber > 0.11:
-            print("WARNING: QBER > 11% - Protocol may be insecure!")
+            logger.warning("QBER > 11% - Protocol may be insecure!")
 
         # Remove sampled bits from keys
         for idx in sorted(sample_indices, reverse=True):
@@ -383,7 +386,7 @@ class BB84Protocol:
 
     def _error_correction_phase(self):
         """Phase 4: Error correction (simplified CASCADE)"""
-        print("\n--- PHASE 4: ERROR CORRECTION ---")
+        logger.info("\n--- PHASE 4: ERROR CORRECTION ---")
 
         # Simplified: Just identify and remove error positions
         # In practice, would use CASCADE, LDPC, or Turbo codes
@@ -393,18 +396,18 @@ class BB84Protocol:
             if self.raw_key_alice[i] != self.raw_key_bob[i]:
                 error_positions.append(i)
 
-        print(f"Found {len(error_positions)} errors in remaining key")
+        logger.info(f"Found {len(error_positions)} errors in remaining key")
 
         # For simulation: assume perfect error correction
         # Bob corrects his key to match Alice
         for i in error_positions:
             self.raw_key_bob[i] = self.raw_key_alice[i]
 
-        print("Error correction completed (simplified)")
+        logger.info("Error correction completed (simplified)")
 
     def _privacy_amplification_phase(self):
         """Phase 5: Privacy amplification (simplified)"""
-        print("\n--- PHASE 5: PRIVACY AMPLIFICATION ---")
+        logger.info("\n--- PHASE 5: PRIVACY AMPLIFICATION ---")
 
         # Calculate how much key to keep based on QBER
         # Simplified version - in practice use universal hashing
@@ -425,8 +428,8 @@ class BB84Protocol:
                 new_bit = self.raw_key_alice[i] ^ self.raw_key_alice[i + 1]
                 self.final_key.append(new_bit)
 
-        print(f"Compression ratio: {compression_ratio:.2%}")
-        print(f"Final secure key length: {len(self.final_key)} bits")
+        logger.info(f"Compression ratio: {compression_ratio:.2%}")
+        logger.info(f"Final secure key length: {len(self.final_key)} bits")
 
     def _calculate_statistics(self) -> Dict:
         """Calculate protocol statistics"""
@@ -502,7 +505,9 @@ class BB84Protocol:
 
         plt.suptitle("BB84 Protocol Analysis", fontsize=16, fontweight="bold")
         plt.tight_layout()
-        plt.savefig("output.png")
+        outname = "output.png"
+        plt.savefig(outname)
+        logger.info(f"Saved visualization to {outname}")
 
 
 # ============================================================================
@@ -529,11 +534,11 @@ def run_bb84_simulation(
         Statistics dictionary
     """
 
-    print(f"\nBB84 SIMULATION PARAMETERS:")
-    print(f"  - Bits to transmit: {num_bits}")
-    print(f"  - Channel loss rate: {channel_loss:.1%}")
-    print(f"  - Channel error rate: {channel_error:.1%}")
-    print("-" * 60)
+    logger.info(f"\nBB84 SIMULATION PARAMETERS:")
+    logger.info(f"  - Bits to transmit: {num_bits}")
+    logger.info(f"  - Channel loss rate: {channel_loss:.1%}")
+    logger.info(f"  - Channel error rate: {channel_error:.1%}")
+    logger.info("-" * 60)
 
     # Create participants
     alice = Alice()
@@ -545,20 +550,20 @@ def run_bb84_simulation(
     stats = protocol.run_protocol(num_bits)
 
     # Print summary
-    print("\n" + "=" * 60)
-    print("SIMULATION SUMMARY")
-    print("=" * 60)
-    print(f"Total bits sent: {stats['total_bits_sent']}")
-    print(f"Final key length: {stats['final_key_length']}")
-    print(f"Overall efficiency: {stats['efficiency']:.2%}")
-    print(f"Measured QBER: {stats['qber']:.2%}")
-    print("-" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("SIMULATION SUMMARY")
+    logger.info("=" * 60)
+    logger.info(f"Total bits sent: {stats['total_bits_sent']}")
+    logger.info(f"Final key length: {stats['final_key_length']}")
+    logger.info(f"Overall efficiency: {stats['efficiency']:.2%}")
+    logger.info(f"Measured QBER: {stats['qber']:.2%}")
+    logger.info("-" * 60)
 
     # Security assessment
     if stats["qber"] < 0.11:
-        print("✓ Protocol SECURE (QBER < 11%)")
+        logger.info("✓ Protocol SECURE (QBER < 11%)")
     else:
-        print("✗ Protocol INSECURE (QBER ≥ 11%)")
+        logger.warning("✗ Protocol INSECURE (QBER ≥ 11%)")
 
     if visualize:
         protocol.visualize_results()
@@ -569,9 +574,9 @@ def run_bb84_simulation(
 def test_different_conditions():
     """Test BB84 under various channel conditions"""
 
-    print("\n" + "=" * 60)
-    print("TESTING BB84 UNDER DIFFERENT CONDITIONS")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("TESTING BB84 UNDER DIFFERENT CONDITIONS")
+    logger.info("=" * 60)
 
     conditions = [
         ("Ideal Channel", 0.0, 0.0),
@@ -584,8 +589,8 @@ def test_different_conditions():
 
     results = []
     for name, loss, error in conditions:
-        print(f"\nTesting: {name}")
-        print("-" * 40)
+        logger.info(f"\nTesting: {name}")
+        logger.info("-" * 40)
 
         # Run simulation
         alice = Alice()
@@ -605,9 +610,9 @@ def test_different_conditions():
             }
         )
 
-        print(f"  QBER: {stats['qber']:.2%}")
-        print(f"  Efficiency: {stats['efficiency']:.2%}")
-        print(f"  Secure: {'Yes' if stats['qber'] < 0.11 else 'No'}")
+        logger.info(f"  QBER: {stats['qber']:.2%}")
+        logger.info(f"  Efficiency: {stats['efficiency']:.2%}")
+        logger.info(f"  Secure: {'Yes' if stats['qber'] < 0.11 else 'No'}")
 
     return results
 
@@ -617,10 +622,13 @@ def test_different_conditions():
 # ============================================================================
 
 if __name__ == "__main__":
+    # Configure basic logging for demo mode
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
     # Run single simulation with visualization
-    print("\n" + "=" * 60)
-    print("BB84 QUANTUM KEY DISTRIBUTION - FOUNDATION")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("BB84 QUANTUM KEY DISTRIBUTION - FOUNDATION")
+    logger.info("=" * 60)
 
     # Basic simulation
     stats = run_bb84_simulation(
@@ -628,26 +636,26 @@ if __name__ == "__main__":
     )
 
     # Test different conditions
-    print("\n" + "=" * 60)
-    print("RUNNING COMPREHENSIVE TESTS")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("RUNNING COMPREHENSIVE TESTS")
+    logger.info("=" * 60)
     test_results = test_different_conditions()
 
     # Summary table
-    print("\n" + "=" * 60)
-    print("COMPREHENSIVE TEST RESULTS")
-    print("=" * 60)
-    print(
-        f"{'Condition':<20} {'Loss':<10} {'Error':<10} {'QBER':<10} {'Efficiency':<12} {'Secure':<10}"
+    logger.info("\n" + "=" * 60)
+    logger.info("COMPREHENSIVE TEST RESULTS")
+    logger.info("=" * 60)
+    logger.info(
+        f"{ 'Condition':<20} {'Loss':<10} {'Error':<10} {'QBER':<10} {'Efficiency':<12} {'Secure':<10}"
     )
-    print("-" * 80)
+    logger.info("-" * 80)
     for r in test_results:
-        print(
+        logger.info(
             f"{r['condition']:<20} {r['loss_rate']:<10.1%} {r['error_rate']:<10.1%} "
             f"{r['qber']:<10.2%} {r['efficiency']:<12.2%} "
             f"{'✓' if r['secure'] else '✗':<10}"
         )
 
-    print("\n" + "=" * 60)
-    print("BB84 FOUNDATION COMPLETE")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("BB84 FOUNDATION COMPLETE")
+    logger.info("=" * 60)
