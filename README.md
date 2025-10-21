@@ -3,23 +3,25 @@
 ## Research Project Overview
 This repository contains the implementation and analysis of the BB84 Quantum Key Distribution Protocol as part of a research paper investigating quantum cryptography and its security implications. The project focuses on both classical and quantum simulations using Qiskit, providing a comprehensive framework for studying the protocol's behavior under various conditions.
 
-## Project Structure
+## Project structure
 ```
-Investigation/
-├── src/                  # Source code files
-│   ├── bb84.py          # Basic BB84 implementation
-│   └── bb84_foundation.py # Advanced hybrid implementation (main code)
-├── tests/               # Test files
-│   ├── test_bb84_qiskit.py # BB84 backend tests
-│   └── test_qiskit.py   # Qiskit environment tests
-├── docs/               # Documentation
-└── requirements.txt    # Project dependencies
+Adaptive-Quantum-Jamming-Strategies-Against-BB84/
+├── src/
+│   ├── main/                 # Canonical implementation (primary entrypoint)
+│   │   └── bb84_main.py      # Canonical BB84 implementation and CLI
+│   ├── bb84_main.py          # Compatibility wrapper -> re-exports from main.bb84_main
+│   └── bb84_education.py     # Educational/legacy implementation (kept for reference)
+├── tests/                    # Test files
+│   ├── test_bb84_qiskit.py   # BB84 backend tests
+│   └── test_qiskit.py        # Qiskit environment tests
+├── docs/                     # Documentation
+└── requirements.txt          # Project dependencies
 ```
 
 ## Main Components
 
 ### 1. BB84 Foundation (Main Implementation)
-`bb84_foundation.py` is the core implementation featuring:
+- `src/main/bb84_main.py` is the core implementation featuring:
 - Hybrid backend support (Classical and Qiskit)
 - Complete BB84 protocol implementation
 - Extensive visualization and analysis tools
@@ -34,10 +36,11 @@ Key features:
 - Detailed visualization of protocol stages
 - Automated report generation
 
-### 2. Supporting Components
-- `bb84.py`: Basic educational implementation
-- `test_bb84_qiskit.py`: Backend comparison tests
-- `test_qiskit.py`: Qiskit environment verification
+### 2. Supporting components
+- `src/bb84_education.py`: Educational implementation and notes
+- `src/bb84_main.py`: Lightweight compatibility wrapper (re-exports canonical symbols from `main.bb84_main`)
+- `tests/test_bb84_qiskit.py`: Backend comparison tests
+- `tests/test_qiskit.py`: Qiskit environment verification
 
 ## Installation
 
@@ -49,19 +52,24 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Command Line Interface
+### Command line usage
 
-The simulation can be run directly from the command line with different backend options:
+The canonical runner is `src/main/bb84_main.py`. There is also a small compatibility wrapper at `src/bb84_main.py` so older invocation paths continue to work.
+
+Examples:
 
 ```bash
 # Run with classical backend (default)
-python bb84_foundation.py
+python src/main/bb84_main.py
 
-# Run with Qiskit backend
-python bb84_foundation.py --use-qiskit
+# Run with Qiskit backend (if available)
+python src/main/bb84_main.py --use-qiskit
 
 # Show help and available options
-python bb84_foundation.py --help
+python src/main/bb84_main.py --help
+
+# Using compatibility wrapper (same behaviour)
+python src/bb84_main.py --help
 ```
 
 Each run performs three types of analysis:
@@ -85,7 +93,15 @@ The simulation generates several output files in the `bb84_output` directory:
 3. Backend Comparison Outputs:
    - `backend_comparison.png`: Boxplots comparing QBER and Efficiency between backends
 
-Each run creates a timestamped directory `run_YYYYMMDD_HHMMSS/` containing the output files.
+Each run creates a descriptive timestamped directory under `bb84_output/` using the pattern:
+
+```
+{backend}_{run_type}_run_{YYYYMMDD_HHMMSS}
+```
+
+Example: `classical_demo_run_20251021_165101` or `qiskit_standard_run_20251021_165341`.
+
+Inside each run directory you'll typically find image files, a `run.log` containing run-time logs, and `summary.json` with run metadata and statistics.
 
 ### CLI options (new)
 
@@ -101,7 +117,7 @@ Example:
 python src/main/bb84_main.py --output-dir bb84_output --run-type standard --log-level INFO
 ```
 
-Each run now creates a descriptive folder name that includes the backend, run type, and timestamp. Inside the folder you'll find image files, a `run.log` containing run-time logs, and `summary.json` with run metadata and statistics.
+Each run creates a descriptive folder name that includes the backend, run type, and timestamp. Inside the folder you'll find image files, a `run.log` containing run-time logs, and `summary.json` with run metadata and statistics.
 
 ### summary.json schema
 
@@ -117,26 +133,33 @@ This file is intended for quick programmatic inspection of run results.
 
 ### Programmatic Usage
 
-For programmatic use, you can import and use the classes directly:
+For programmatic use, import the canonical symbols from the `main` package. A couple of valid examples:
 
 ```python
-from src.bb84_foundation import BB84Protocol
+from main.bb84_main import BB84Protocol, BB84Simulator
 
-# Create and run protocol
-protocol = BB84Protocol(use_qiskit=False)  # Use classical backend
+# or, since src/main/__init__.py exports the main classes:
+from main import BB84Protocol, BB84Simulator
+
+# Create and run protocol (classical backend)
+protocol = BB84Protocol(use_qiskit=False, output_dir='bb84_output', run_type='demo')
 protocol.setup(channel_loss=0.1, channel_error=0.02)
 stats = protocol.run_protocol(num_bits=1000)
+
+# Using the simulator helper
+sim = BB84Simulator(use_qiskit=False, output_dir='bb84_output', run_type='demo')
+stats = sim.run_single_simulation(num_bits=200)
 ```
 
 ### Parameter Sweep
 ```python
-from src.bb84_foundation import BB84Simulator
+from main.bb84_main import BB84Simulator
 
 simulator = BB84Simulator()
 results = simulator.run_parameter_sweep(
-    num_bits=500,
-    loss_rates=[0.0, 0.1, 0.2],
-    error_rates=[0.0, 0.05, 0.10]
+   num_bits=500,
+   loss_rates=[0.0, 0.1, 0.2],
+   error_rates=[0.0, 0.05, 0.10]
 )
 ```
 
@@ -156,14 +179,14 @@ results = simulator.run_parameter_sweep(
    - Automated security assessment in reports
    - Visual indicators in parameter sweep heatmaps
 
-### Noise Modeling and Channel Effects
+### Noise modeling and channel effects
 
-1. **Classical Backend**:
+1. **Classical backend**
    - Simple bit-flip error model
    - Probabilistic photon loss
    - Fast execution for initial testing
 
-2. **Qiskit Backend**:
+2. **Qiskit backend**
    - Realistic quantum noise modeling using `NoiseModel`
    - Depolarizing channel errors
    - Hardware-inspired noise effects
