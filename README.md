@@ -1,242 +1,117 @@
-# BB84 Quantum Key Distribution Protocol Implementation
+# Adaptive Quantum Jamming Strategies Against BB84
 
-## Research Project Overview
-This repository contains the implementation and analysis of the BB84 Quantum Key Distribution Protocol as part of a research paper investigating quantum cryptography and its security implications. The project focuses on both classical and quantum simulations using Qiskit, providing a comprehensive framework for studying the protocol's behavior under various conditions.
+## Overview
+This repository provides a complete, research-grade BB84 simulator with integrated eavesdropping strategies (Eve), multi-test attack detection, information-theoretic metrics, and publication-quality visualization. It supports a fast classical backend and an optional Qiskit backend.
+
+Highlights:
+- Full BB84 protocol with image-based outputs and JSON metadata
+- Pluggable eavesdropping strategies via a clean strategy pattern
+- Statistical AttackDetector (QBER CI, chi-square, mutual information, runs test)
+- Information theory utilities (von Neumann entropy, Holevo bound, mutual information)
+- AdaptiveJammingSimulator for strategy comparison and CSV/plot exports
+- VisualizationManager for figures and LaTeX tables
+
+As of 2025-10-24: full test suite passing (155 passed, 1 skipped) on Linux with Python 3.13.
 
 ## Project structure
 ```
 Adaptive-Quantum-Jamming-Strategies-Against-BB84/
 ├── src/
-│   ├── main/                 # Canonical implementation (primary entrypoint)
-│   │   └── bb84_main.py      # Canonical BB84 implementation and CLI
-│   ├── bb84_main.py          # Compatibility wrapper -> re-exports from main.bb84_main
-│   └── bb84_education.py     # Educational/legacy implementation (kept for reference)
-├── tests/                    # Test files
-│   ├── test_bb84_qiskit.py   # BB84 backend tests
-│   └── test_qiskit.py        # Qiskit environment tests
-├── docs/                     # Documentation
-└── requirements.txt          # Project dependencies
+│   └── main/
+│       └── bb84_main.py          # Core protocol, Eve, detector, simulator, visualization
+├── tests/                        # Unit/integration tests (attack, holevo, visualization, etc.)
+├── examples/
+│   └── visualization_demo.py     # End-to-end demo generating all figures and a LaTeX table
+├── bb84_output/                  # Timestamped run artifacts (images, logs, summary.json)
+├── *.md                          # Documentation (this README and topic guides)
+└── requirements*.txt             # Dependencies
 ```
 
-## Main Components
+## Key components
 
-### 1. BB84 Foundation (Main Implementation)
-- `src/main/bb84_main.py` is the core implementation featuring:
-- Hybrid backend support (Classical and Qiskit)
-- Complete BB84 protocol implementation
-- Extensive visualization and analysis tools
-- Quantum channel simulation with noise and loss
-- Performance metrics and security analysis
-- Parameter sweep capabilities
+- Protocol and channel
+  - `BB84Protocol`: 5-phase flow (transmit → sift → estimate errors → correct → privacy amp); invokes detection and provides Eve feedback after error estimation; saves images and `summary.json`.
+  - `QuantumChannel`: applies loss and noise, optionally integrates `EveController` and forwards transmission metadata (index, timestamp, atmospheric Cn², loss/error rates).
 
-Key features:
-- Modular architecture with separate Alice, Bob, and Channel classes
-- Support for both classical and quantum backends
-- Comprehensive error analysis and QBER calculation
-- Detailed visualization of protocol stages
-- Automated report generation
+- Eve and strategies
+  - `AttackStrategy` (abstract) and `EveController` (orchestration).
+  - Built-ins: `InterceptResendAttack`, `AdaptiveAttack`, `QBERAdaptiveStrategy` (PID), `GradientDescentQBERAdaptive`, `BasisLearningStrategy`, `PhotonNumberSplittingAttack` (PNS) and others present in `bb84_main.py`.
 
-### 2. Supporting components
-- `src/bb84_education.py`: Educational implementation and notes
-- `src/bb84_main.py`: Lightweight compatibility wrapper (re-exports canonical symbols from `main.bb84_main`)
-- `tests/test_bb84_qiskit.py`: Backend comparison tests
-- `tests/test_qiskit.py`: Qiskit environment verification
+- Detection and information theory
+  - `AttackDetector`: QBER Hoeffding CI, chi-square basis balance, basis mutual information, runs test; aggregated verdict with serializable history.
+  - `von_neumann_entropy`, `holevo_bound`, `bb84_holevo_bound`, `binary_entropy`, `calculate_eve_information`, `mutual_information_eve_alice`.
+
+- Simulation and visualization
+  - `BB84Simulator`: parameter sweeps, backend comparisons, summary reports.
+  - `AdaptiveJammingSimulator`: single-run strategy orchestration, comparison, CSV export, t-tests.
+  - `VisualizationManager`: QBER/time, intercept probability, info leakage, ROC/AUC, atmospheric visuals (Rytov, phase screens, beam frames), error/runs/MI, Holevo charts, LaTeX table export.
 
 ## Installation
 
-1. Clone the repository
-2. Install dependencies:
 ```bash
 pip install -r requirements.txt
+# Optional (quantum backend):
+pip install qiskit qiskit-aer
 ```
 
-## Usage
+## Quick start
 
-### Command line usage
-
-The canonical runner is `src/main/bb84_main.py`. There is also a small compatibility wrapper at `src/bb84_main.py` so older invocation paths continue to work.
-
-Examples:
-
-```bash
-# Run with classical backend (default)
-python src/main/bb84_main.py
-
-# Run with Qiskit backend (if available)
-python src/main/bb84_main.py --use-qiskit
-
-# Show help and available options
-python src/main/bb84_main.py --help
-
-# Using compatibility wrapper (same behaviour)
-python src/bb84_main.py --help
-```
-
-Each run performs three types of analysis:
-1. Basic simulation with selected backend
-2. Parameter sweep across different error and loss rates
-3. Comparison between classical and quantum backends
-
-### Output Structure
-
-The simulation generates several output files in the `bb84_output` directory:
-
-1. Basic Simulation Outputs:
-   - `protocol_execution.png`: Detailed log of the protocol execution
-   - `protocol_summary.png`: Summary statistics table
-   - `protocol_visualization.png`: Visualization of key generation pipeline
-   - `summary_report_TIMESTAMP.png`: Comprehensive summary report
-
-2. Parameter Sweep Outputs:
-   - `parameter_sweep_heatmap.png`: Three heatmaps showing QBER, Efficiency, and Security Status
-
-3. Backend Comparison Outputs:
-   - `backend_comparison.png`: Boxplots comparing QBER and Efficiency between backends
-
-Each run creates a descriptive timestamped directory under `bb84_output/` using the pattern:
-
-```
-{backend}_{run_type}_run_{YYYYMMDD_HHMMSS}
-```
-
-Example: `classical_demo_run_20251021_165101` or `qiskit_standard_run_20251021_165341`.
-
-Inside each run directory you'll typically find image files, a `run.log` containing run-time logs, and `summary.json` with run metadata and statistics.
-
-### CLI options (new)
-
-The main runner supports a few useful flags to control output and logging:
-
-- `--output-dir`: Path where run artifacts are saved (default: `bb84_output/`).
-- `--run-type`: Short label for the run (e.g., `standard`, `sweep`, `comparison`) used in output folder names.
-- `--log-level`: Logging verbosity (`DEBUG`, `INFO`, `WARNING`, `ERROR`). Default is `INFO`.
-
-Example:
-
-```bash
-python src/main/bb84_main.py --output-dir bb84_output --run-type standard --log-level INFO
-```
-
-Each run creates a descriptive folder name that includes the backend, run type, and timestamp. Inside the folder you'll find image files, a `run.log` containing run-time logs, and `summary.json` with run metadata and statistics.
-
-### summary.json schema
-
-Each run saves a small JSON file `summary.json` with the following keys:
-
-- `backend`: `classical` or `qiskit`
-- `run_type`: The `--run-type` value
-- `timestamp`: ISO 8601 timestamp of the run
-- `total_bits_sent`, `raw_key_length`, `final_key_length`, `qber`, `efficiency`
-- `channel_loss_rate`, `channel_error_rate`
-
-This file is intended for quick programmatic inspection of run results.
-
-### Programmatic Usage
-
-For programmatic use, import the canonical symbols from the `main` package. A couple of valid examples:
+Run a complete BB84 protocol with detection and optional Eve:
 
 ```python
-from main.bb84_main import BB84Protocol, BB84Simulator
+from src.main.bb84_main import BB84Protocol, ClassicalBackend, InterceptResendAttack, EveController
 
-# or, since src/main/__init__.py exports the main classes:
-from main import BB84Protocol, BB84Simulator
-
-# Create and run protocol (classical backend)
-protocol = BB84Protocol(use_qiskit=False, output_dir='bb84_output', run_type='demo')
-protocol.setup(channel_loss=0.1, channel_error=0.02)
+backend = ClassicalBackend()
+attack = InterceptResendAttack(backend, intercept_probability=0.5)
+protocol = BB84Protocol(backend=backend, attack_strategy=attack)
+protocol.setup(channel_loss=0.05, channel_error=0.02)
 stats = protocol.run_protocol(num_bits=1000)
-
-# Using the simulator helper
-sim = BB84Simulator(use_qiskit=False, output_dir='bb84_output', run_type='demo')
-stats = sim.run_single_simulation(num_bits=200)
+print({k: stats[k] for k in ['qber','secure','attack_detected','eve_interceptions']})
 ```
 
-### Parameter Sweep
+Compare strategies and plot results:
+
 ```python
-from main.bb84_main import BB84Simulator
+from src.main.bb84_main import AdaptiveJammingSimulator, ClassicalBackend, InterceptResendAttack
 
-simulator = BB84Simulator()
-results = simulator.run_parameter_sweep(
-   num_bits=500,
-   loss_rates=[0.0, 0.1, 0.2],
-   error_rates=[0.0, 0.05, 0.10]
-)
+sim = AdaptiveJammingSimulator(n_qubits=1000, backend=ClassicalBackend())
+res_map = sim.compare_strategies([InterceptResendAttack(sim.backend, 0.3)])
+fig = sim.plot_results(res_map)  # Returns a matplotlib Figure
+csv = sim.save_results_csv(res_map)  # Writes a CSV summary
 ```
 
-### Understanding Results
+Generate publication-ready figures and a LaTeX table:
 
-1. **QBER (Quantum Bit Error Rate)**:
-   - Values below 11% indicate secure key distribution
-   - Higher values may indicate eavesdropping or channel noise
+```python
+from src.main.bb84_main import VisualizationManager
+viz = VisualizationManager(output_dir='bb84_output/figs')
+viz.export_results_table({'Baseline': {'QBER': {'mean':0.08,'std':0.01,'significant':False}}}, filename='table.tex')
+```
 
-2. **Efficiency**:
-   - Shows the ratio of final key length to initial bits sent
-   - Affected by loss rate and error rate
-   - Typically ranges from 15% to 25%
+See `examples/visualization_demo.py` for a comprehensive end-to-end demo that produces a full figure set and LaTeX export, even if a simulation step fails late.
 
-3. **Security Status**:
-   - Determined by QBER threshold of 11%
-   - Automated security assessment in reports
-   - Visual indicators in parameter sweep heatmaps
+## Outputs
 
-### Noise modeling and channel effects
+Each run creates a timestamped directory under `bb84_output/`:
 
-1. **Classical backend**
-   - Simple bit-flip error model
-   - Probabilistic photon loss
-   - Fast execution for initial testing
+- Images: protocol log, summary table, visualizations (pipeline, parameter sweep, backend comparison), and any visualization/demo outputs
+- Logs: `run.log` per run directory
+- Metadata: `summary.json` with run stats and parameters
 
-2. **Qiskit backend**
-   - Realistic quantum noise modeling using `NoiseModel`
-   - Depolarizing channel errors
-   - Hardware-inspired noise effects
-   - Quantum circuit-level simulation
+`summary.json` contains at minimum:
+- `stats`: backend, bits sent, raw/final key length, qber, efficiency, channel loss/error rates, `secure` flag
+- Detector and Eve fields: `attack_detected`, `eve_interceptions`, `eve_information` (when applicable)
+- `params`: run arguments (num_bits, channel_loss, channel_error, backend)
 
-### Visualization Features
+## Notes
 
-1. **Protocol Execution**:
-   - Real-time logging of protocol stages
-   - Quantum state preparation and measurement
-   - Basis reconciliation statistics
-   - Error detection and correction phases
-
-2. **Statistical Analysis**:
-   - Box plots for backend comparison
-   - Heatmaps for parameter sensitivity
-   - Key generation pipeline visualization
-   - Security threshold indicators
-
-3. **Report Generation**:
-   - Comprehensive summary reports
-   - Statistical metrics and analysis
-   - Security assessment
-   - Performance comparisons
-
-## Research Context
-This implementation is part of a research paper investigating:
-1. BB84 protocol security under various channel conditions
-2. Comparison between classical and quantum simulations
-3. Impact of noise and loss on key generation
-4. Security thresholds and QBER analysis
-5. Potential vulnerabilities and attack scenarios
-
-## Dependencies
-- numpy>=1.19.0
-- matplotlib>=3.3.0
-- qiskit>=1.0.0 (optional)
-- qiskit-aer>=0.12.0 (optional)
-- python-dateutil>=2.8.0
-
-## Future Work
-- Implementation of quantum jamming scenarios
-- Extended analysis of eavesdropping attacks
-- Integration with hardware quantum devices
-- Advanced error correction mechanisms
-- Privacy amplification improvements
+- Backends: classical backend is always available; Qiskit backend is optional and auto-detected.
+- Tests: run `pytest -q` from repo root. Current status: PASS (155 passed, 1 skipped).
+- Reproducibility: for simulator comparisons, prefer fixed seeds and consistent presets.
 
 ## References
-1. Bennett, C. H., & Brassard, G. (1984). Quantum cryptography: Public key distribution and coin tossing.
-2. Additional research paper references will be added here...
+- Bennett, C. H., & Brassard, G. (1984). Quantum cryptography: Public key distribution and coin tossing.
+- Scarani, V., et al. (2009). The security of practical quantum key distribution.
 
 ## License
-This project is part of an academic research paper. All rights reserved.
+Academic research project. See repository for details.
