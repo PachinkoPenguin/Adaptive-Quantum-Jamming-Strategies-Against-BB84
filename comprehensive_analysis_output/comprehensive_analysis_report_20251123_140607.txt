@@ -1,0 +1,318 @@
+================================================================================
+BB84 QUANTUM KEY DISTRIBUTION - COMPREHENSIVE ANALYSIS REPORT
+================================================================================
+
+Generated: 2025-11-23 14:06:07
+Total Simulations: 17
+Quantum Bits per Run: 2000
+Channel Parameters: Loss=5%, Error=2%
+
+================================================================================
+SECTION 1: EXECUTIVE SUMMARY
+================================================================================
+
+This report presents a comprehensive analysis of the BB84 quantum key distribution
+protocol under various eavesdropping scenarios. We evaluate multiple attack strategies,
+analyze detection capabilities, and measure information leakage.
+
+KEY FINDINGS:
+1. Baseline QBER (no attack): 0.0105 (1.05%)
+2. Detection threshold: 0.11 (11%)
+3. Strategies tested: 7
+4. Adaptive strategies successfully evade detection: No
+
+
+================================================================================
+SECTION 2: BASELINE PROTOCOL (No Eavesdropping)
+================================================================================
+
+This establishes the baseline performance of BB84 under normal channel conditions
+with natural loss and noise but no active eavesdropping.
+
+PROTOCOL PARAMETERS:
+  Initial Bits Sent: 2000
+  Channel Loss Rate: 5%
+  Channel Error Rate: 2%
+
+RESULTS:
+  Quantum Bit Error Rate (QBER): 0.010526
+  Percentage: 1.05%
+  Final Key Length: 380 bits
+  Efficiency: 19.00%
+  Attack Detected: False
+  Secure Communication: True
+
+INTERPRETATION:
+  The baseline QBER of 1.05% is well below the 11% threshold,
+  indicating that natural channel noise alone does not trigger false alarms.
+  The efficiency of 19.00% shows the overhead of sifting,
+  error correction, and privacy amplification.
+
+
+================================================================================
+SECTION 3: ATTACK STRATEGY COMPARISON
+================================================================================
+
+Analysis of different eavesdropping strategies and their effectiveness.
+
+--------------------------------------------------------------------------------
+Strategy: Intercept-Resend 30%
+--------------------------------------------------------------------------------
+  QBER: 0.098958 (9.90%)
+  Detection Status: DETECTED
+  Threshold Violation: NO
+  Eve Interceptions: 559
+  Information Leaked to Eve: 279.5000 bits
+  Final Key Length: 386 bits
+  Efficiency: 19.30%
+  Secure: True
+
+  ANALYSIS:
+    Theoretical QBER: 0.0750
+    Observed QBER: 0.0990
+    Difference: 0.0240
+    This deviates from theoretical prediction.
+
+--------------------------------------------------------------------------------
+Strategy: Intercept-Resend 50%
+--------------------------------------------------------------------------------
+  QBER: 0.187817 (18.78%)
+  Detection Status: DETECTED
+  Threshold Violation: YES
+  Eve Interceptions: 956
+  Information Leaked to Eve: 478.0000 bits
+  Final Key Length: 344 bits
+  Efficiency: 17.20%
+  Secure: False
+
+  ANALYSIS:
+    Theoretical QBER: 0.1250
+    Observed QBER: 0.1878
+    Difference: 0.0628
+    This deviates from theoretical prediction.
+
+--------------------------------------------------------------------------------
+Strategy: QBER-Adaptive (PID)
+--------------------------------------------------------------------------------
+  QBER: 0.098958 (9.90%)
+  Detection Status: DETECTED
+  Threshold Violation: NO
+  Eve Interceptions: 559
+  Information Leaked to Eve: 279.5000 bits
+  Final Key Length: 386 bits
+  Efficiency: 19.30%
+  Secure: True
+
+  ANALYSIS:
+    Target QBER: 0.10 (10%)
+    Achieved QBER: 0.0990
+    Target Achievement: 99.0%
+    Adaptive strategy failed to evade detection.
+
+--------------------------------------------------------------------------------
+Strategy: Gradient Descent QBER
+--------------------------------------------------------------------------------
+  QBER: 0.098958 (9.90%)
+  Detection Status: DETECTED
+  Threshold Violation: NO
+  Eve Interceptions: 559
+  Information Leaked to Eve: 279.5000 bits
+  Final Key Length: 386 bits
+  Efficiency: 19.30%
+  Secure: True
+
+  ANALYSIS:
+    Target QBER: 0.10 (10%)
+    Achieved QBER: 0.0990
+    Target Achievement: 99.0%
+    Adaptive strategy failed to evade detection.
+
+--------------------------------------------------------------------------------
+Strategy: Basis Learning
+--------------------------------------------------------------------------------
+  QBER: 0.115385 (11.54%)
+  Detection Status: DETECTED
+  Threshold Violation: YES
+  Eve Interceptions: 876
+  Information Leaked to Eve: 0.0000 bits
+  Final Key Length: 364 bits
+  Efficiency: 18.20%
+  Secure: False
+
+  ANALYSIS:
+    Uses Bayesian inference to learn Alice's basis preferences.
+    Detection status: FAILED - detected
+
+--------------------------------------------------------------------------------
+Strategy: PNS Attack
+--------------------------------------------------------------------------------
+  QBER: 0.010526 (1.05%)
+  Detection Status: UNDETECTED
+  Threshold Violation: NO
+  Eve Interceptions: 175
+  Information Leaked to Eve: 175.0000 bits
+  Final Key Length: 380 bits
+  Efficiency: 19.00%
+  Secure: True
+
+  ANALYSIS:
+    Photon Number Splitting attack exploits multi-photon states.
+    Lower QBER due to passive eavesdropping technique.
+
+--------------------------------------------------------------------------------
+Strategy: Channel-Adaptive
+--------------------------------------------------------------------------------
+  QBER: 0.174359 (17.44%)
+  Detection Status: DETECTED
+  Threshold Violation: YES
+  Eve Interceptions: 1351
+  Information Leaked to Eve: 0.0000 bits
+  Final Key Length: 373 bits
+  Efficiency: 18.65%
+  Secure: False
+
+  ANALYSIS:
+
+
+================================================================================
+SECTION 4: PARAMETER SWEEP (Intercept Probability)
+================================================================================
+
+Analysis of how intercept probability affects QBER and detection.
+
+Intercept %     QBER         QBER %       Detected     Threshold      
+--------------------------------------------------------------------------------
+10.0            0.038043     3.80         NO           OK             
+20.0            0.052632     5.26         NO           OK             
+30.0            0.098958     9.90         YES          OK             
+40.0            0.136126     13.61        NO           EXCEEDED       
+50.0            0.187817     18.78        YES          EXCEEDED       
+60.0            0.163842     16.38        YES          EXCEEDED       
+70.0            0.174359     17.44        YES          EXCEEDED       
+80.0            0.230769     23.08        YES          EXCEEDED       
+
+OBSERVATIONS:
+  Detection threshold exceeded at ~40% intercept probability.
+  Theoretical prediction: 44% (since 0.25 * 0.44 = 0.11)
+  Observed: 40%
+
+  Linear relationship: QBER ≈ 0.275 × intercept_probability
+  Theoretical slope: 0.25
+  Deviation: 0.025
+
+
+================================================================================
+SECTION 5: DETECTION SYSTEM ANALYSIS
+================================================================================
+
+The BB84 protocol uses a multi-test attack detection system:
+
+DETECTION TESTS:
+  1. QBER Hoeffding Confidence Interval
+     - Tests if QBER exceeds 11% threshold with statistical confidence
+     - Accounts for sampling uncertainty
+
+  2. Chi-Square Basis Balance Test
+     - Verifies random distribution of rectilinear/diagonal bases
+     - Detects bias introduced by basis-learning attacks
+
+  3. Basis Mutual Information Test
+     - Measures information correlation between Alice and Eve's basis choices
+     - Should be near zero for secure communication
+
+  4. Runs Test (Randomness)
+     - Analyzes error patterns for non-random sequences
+     - Detects systematic attack patterns
+
+DETECTION RESULTS SUMMARY:
+  Strategies Detected: 6/7 (85.7%)
+  Strategies Evading Detection: 1/7
+
+STRATEGIES THAT EVADED DETECTION:
+  - PNS Attack: QBER = 0.0105
+
+
+================================================================================
+SECTION 6: INFORMATION THEORY ANALYSIS
+================================================================================
+
+Analysis of information leakage to the eavesdropper.
+
+THEORETICAL BOUNDS:
+  BB84 Holevo Bound: ~1.0 bit (maximum information Eve can extract)
+  Intercept-Resend: ~0.5 bits (50% basis match probability)
+  Optimal Attack: Approaches Holevo bound
+
+OBSERVED INFORMATION LEAKAGE:
+  Intercept-Resend 30%: 279.5000 bits
+    (27950.0% of Holevo bound)
+  Intercept-Resend 50%: 478.0000 bits
+    (47800.0% of Holevo bound)
+  QBER-Adaptive (PID): 279.5000 bits
+    (27950.0% of Holevo bound)
+  Gradient Descent QBER: 279.5000 bits
+    (27950.0% of Holevo bound)
+  Basis Learning: 0.0000 bits
+    (0.0% of Holevo bound)
+  PNS Attack: 175.0000 bits
+    (17500.0% of Holevo bound)
+  Channel-Adaptive: 0.0000 bits
+    (0.0% of Holevo bound)
+
+
+================================================================================
+SECTION 7: VISUALIZATION SUITE
+================================================================================
+
+Generated visualizations for detailed analysis:
+
+  QBER Evolution:
+    Path: comprehensive_analysis_output/visualizations/qber_evolution_20251123_140606.png
+    Status: Generated
+
+  Information Leakage:
+    Path: comprehensive_analysis_output/visualizations/info_leakage_20251123_140606.png
+    Status: Generated
+
+  ROC Curves:
+    Path: comprehensive_analysis_output/visualizations/detection_roc_20251123_140606.png
+    Status: Generated
+
+================================================================================
+SECTION 8: CONCLUSIONS AND RECOMMENDATIONS
+================================================================================
+
+KEY FINDINGS:
+
+1. BASELINE SECURITY:
+   Natural channel conditions (5% loss, 2% error) produce QBER of 1.05%,
+   well below the 11% detection threshold. No false positives observed.
+
+2. SIMPLE ATTACKS:
+   Intercept-resend attacks with probability > 40% are reliably detected.
+   QBER follows theoretical prediction of 0.25 × intercept_probability.
+
+3. ADAPTIVE ATTACKS:
+   Adaptive strategies were detected, suggesting effective multi-test detection.
+
+4. INFORMATION LEAKAGE:
+   Maximum observed information leakage: 478.0000 bits
+   This represents 47800.0% of the theoretical Holevo bound.
+
+5. DETECTION EFFECTIVENESS:
+   Detection rate: 6/7 (85.7%)
+   Multi-test approach provides robust detection against naive attacks,
+   but sophisticated adaptive strategies can evade single-threshold detection.
+
+
+RECOMMENDATIONS:
+
+1. Implement dynamic threshold adjustment based on channel conditions
+2. Add temporal correlation analysis to detect adaptive behavior
+3. Use multiple QBER measurements at different points in transmission
+4. Consider information-theoretic bounds in addition to QBER thresholds
+5. Deploy decoy state protocols to defend against PNS attacks
+
+================================================================================
+END OF REPORT
+================================================================================

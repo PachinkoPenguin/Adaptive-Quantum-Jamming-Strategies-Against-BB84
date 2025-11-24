@@ -1,0 +1,210 @@
+2025-11-23 14:05:56,837 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140556/classical_standard_protocol_execution_20251123_140556.png
+2025-11-23 14:05:57,006 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140556/protocol_summary.png
+2025-11-23 14:05:57,006 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140556/summary.json
+/home/ada/Documents/estancia_investigacion/Adaptive-Quantum-Jamming-Strategies-Against-BB84/./src/main/bb84_main.py:329: UserWarning: Glyph 65039 (\N{VARIATION SELECTOR-16}) missing from font(s) DejaVu Sans Mono.
+  plt.savefig(filepath, dpi=100, bbox_inches='tight', facecolor='white')
+2025-11-23 14:05:57,427 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140557/classical_standard_protocol_execution_20251123_140557.png
+2025-11-23 14:05:57,575 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140557/protocol_summary.png
+2025-11-23 14:05:57,575 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140557/summary.json
+2025-11-23 14:05:57,985 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140557/classical_standard_protocol_execution_20251123_140557.png
+2025-11-23 14:05:58,132 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140557/protocol_summary.png
+2025-11-23 14:05:58,132 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140557/summary.json
+2025-11-23 14:05:58,543 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140558/classical_standard_protocol_execution_20251123_140558.png
+2025-11-23 14:05:58,691 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140558/protocol_summary.png
+2025-11-23 14:05:58,692 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140558/summary.json
+2025-11-23 14:05:59,114 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140558/classical_standard_protocol_execution_20251123_140558.png
+2025-11-23 14:05:59,274 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140558/protocol_summary.png
+2025-11-23 14:05:59,274 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140558/summary.json
+2025-11-23 14:05:59,694 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140559/classical_standard_protocol_execution_20251123_140559.png
+2025-11-23 14:05:59,847 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140559/protocol_summary.png
+2025-11-23 14:05:59,847 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140559/summary.json
+2025-11-23 14:06:00,028 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140559/classical_standard_protocol_execution_20251123_140559.png
+2025-11-23 14:06:00,184 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140559/protocol_summary.png
+2025-11-23 14:06:00,184 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140559/summary.json
+2025-11-23 14:06:00,594 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140600/classical_standard_protocol_execution_20251123_140600.png
+2025-11-23 14:06:00,794 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140600/protocol_summary.png
+2025-11-23 14:06:00,794 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140600/summary.json
+2025-11-23 14:06:00,983 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140600/classical_standard_protocol_execution_20251123_140600.png
+2025-11-23 14:06:01,160 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140600/protocol_summary.png
+2025-11-23 14:06:01,160 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140600/summary.json
+2025-11-23 14:06:01,356 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140601/classical_standard_protocol_execution_20251123_140601.png
+2025-11-23 14:06:01,537 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140601/protocol_summary.png
+2025-11-23 14:06:01,537 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140601/summary.json
+2025-11-23 14:06:02,016 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140601/classical_standard_protocol_execution_20251123_140601.png
+2025-11-23 14:06:02,192 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140601/protocol_summary.png
+2025-11-23 14:06:02,192 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140601/summary.json
+2025-11-23 14:06:02,395 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140602/classical_standard_protocol_execution_20251123_140602.png
+2025-11-23 14:06:02,567 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140602/protocol_summary.png
+2025-11-23 14:06:02,567 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140602/summary.json
+2025-11-23 14:06:03,134 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140602/classical_standard_protocol_execution_20251123_140602.png
+2025-11-23 14:06:03,318 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140602/protocol_summary.png
+2025-11-23 14:06:03,318 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140602/summary.json
+2025-11-23 14:06:03,794 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140603/classical_standard_protocol_execution_20251123_140603.png
+2025-11-23 14:06:03,967 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140603/protocol_summary.png
+2025-11-23 14:06:03,967 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140603/summary.json
+2025-11-23 14:06:04,437 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140603/classical_standard_protocol_execution_20251123_140603.png
+2025-11-23 14:06:04,612 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140603/protocol_summary.png
+2025-11-23 14:06:04,612 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140603/summary.json
+2025-11-23 14:06:05,131 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140604/classical_standard_protocol_execution_20251123_140604.png
+2025-11-23 14:06:05,347 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140604/protocol_summary.png
+2025-11-23 14:06:05,347 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140604/summary.json
+2025-11-23 14:06:05,976 - INFO - Saved log image: bb84_output/classical_standard_run_20251123_140605/classical_standard_protocol_execution_20251123_140605.png
+2025-11-23 14:06:06,173 - INFO - Saved summary table image: bb84_output/classical_standard_run_20251123_140605/protocol_summary.png
+2025-11-23 14:06:06,173 - INFO - Saved metadata JSON: bb84_output/classical_standard_run_20251123_140605/summary.json
+✓ Qiskit detected and loaded successfully! (Version 1.0+)
+
+================================================================================
+COMPREHENSIVE BB84 ANALYSIS
+================================================================================
+
+Backend: Classical Simulation
+Output Directory: comprehensive_analysis_output
+Timestamp: 2025-11-23 14:05:56
+
+================================================================================
+1. BASELINE PROTOCOL (No Eavesdropping)
+================================================================================
+
+Baseline Results:
+  QBER: 0.0105
+  Final Key Length: 380
+  Efficiency: 19.00%
+  Attack Detected: False
+  Secure: True
+
+================================================================================
+2. ATTACK STRATEGY COMPARISON
+================================================================================
+
+--- Testing: Intercept-Resend 30% ---
+  QBER: 0.0990
+  Attack Detected: True
+  Eve Interceptions: 559
+  Eve Information: 279.5000
+  Final Key Length: 386
+  Efficiency: 19.30%
+
+--- Testing: Intercept-Resend 50% ---
+  QBER: 0.1878
+  Attack Detected: True
+  Eve Interceptions: 956
+  Eve Information: 478.0000
+  Final Key Length: 344
+  Efficiency: 17.20%
+
+--- Testing: QBER-Adaptive (PID) ---
+  QBER: 0.0990
+  Attack Detected: True
+  Eve Interceptions: 559
+  Eve Information: 279.5000
+  Final Key Length: 386
+  Efficiency: 19.30%
+
+--- Testing: Gradient Descent QBER ---
+  QBER: 0.0990
+  Attack Detected: True
+  Eve Interceptions: 559
+  Eve Information: 279.5000
+  Final Key Length: 386
+  Efficiency: 19.30%
+
+--- Testing: Basis Learning ---
+  QBER: 0.1154
+  Attack Detected: True
+  Eve Interceptions: 876
+  Eve Information: 0.0000
+  Final Key Length: 364
+  Efficiency: 18.20%
+
+--- Testing: PNS Attack ---
+  QBER: 0.0105
+  Attack Detected: False
+  Eve Interceptions: 175
+  Eve Information: 175.0000
+  Final Key Length: 380
+  Efficiency: 19.00%
+
+--- Testing: Channel-Adaptive ---
+  QBER: 0.1744
+  Attack Detected: True
+  Eve Interceptions: 1351
+  Eve Information: 0.0000
+  Final Key Length: 373
+  Efficiency: 18.65%
+
+================================================================================
+3. PARAMETER SWEEP (Intercept Probability)
+================================================================================
+
+--- Intercept Probability: 0.1 ---
+  QBER: 0.0380
+  Attack Detected: False
+  Detection Threshold: OK
+
+--- Intercept Probability: 0.2 ---
+  QBER: 0.0526
+  Attack Detected: False
+  Detection Threshold: OK
+
+--- Intercept Probability: 0.3 ---
+  QBER: 0.0990
+  Attack Detected: True
+  Detection Threshold: OK
+
+--- Intercept Probability: 0.4 ---
+  QBER: 0.1361
+  Attack Detected: False
+  Detection Threshold: EXCEEDED
+
+--- Intercept Probability: 0.5 ---
+  QBER: 0.1878
+  Attack Detected: True
+  Detection Threshold: EXCEEDED
+
+--- Intercept Probability: 0.6 ---
+  QBER: 0.1638
+  Attack Detected: True
+  Detection Threshold: EXCEEDED
+
+--- Intercept Probability: 0.7 ---
+  QBER: 0.1744
+  Attack Detected: True
+  Detection Threshold: EXCEEDED
+
+--- Intercept Probability: 0.8 ---
+  QBER: 0.2308
+  Attack Detected: True
+  Detection Threshold: EXCEEDED
+
+================================================================================
+4. GENERATING VISUALIZATION SUITE
+================================================================================
+
+--- Running adaptive protocol for visualizations ---
+
+1. QBER Evolution Plot
+   Saved: comprehensive_analysis_output/visualizations/qber_evolution_20251123_140606.png
+
+2. Information Leakage Comparison
+   Saved: comprehensive_analysis_output/visualizations/info_leakage_20251123_140606.png
+
+3. Detection ROC Curves
+   Saved: comprehensive_analysis_output/visualizations/detection_roc_20251123_140606.png
+
+4. Atmospheric Effects
+   Error: 'VisualizationManager' object has no attribute '_hufnagel_valley_cn2'
+
+================================================================================
+5. GENERATING DETAILED REPORT
+================================================================================
+
+Report saved to: comprehensive_analysis_output/comprehensive_analysis_report_20251123_140607.txt
+
+================================================================================
+ANALYSIS COMPLETE
+================================================================================
+
+All results saved to: comprehensive_analysis_output/
+Main report: comprehensive_analysis_output/comprehensive_analysis_report_20251123_140607.txt
+Visualizations: comprehensive_analysis_output/visualizations/
+Individual run outputs: bb84_output/

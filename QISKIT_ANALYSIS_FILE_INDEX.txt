@@ -1,0 +1,51 @@
+QISKIT ANALYSIS FILE INDEX - Generated 2025-11-23 16:46:19
+=========================================================
+
+Root Artifacts:
+  COMPREHENSIVE_ANALYSIS_QISKIT_RESULTS.md        # Markdown comprehensive report (formatted)
+  comprehensive_analysis_qiskit_run.log            # Execution transcript of all simulations
+  comprehensive_analysis_qiskit_output/            # Container for raw report + visualizations
+
+Inside comprehensive_analysis_qiskit_output/:
+  comprehensive_analysis_qiskit_report_20251123_164619.txt   # Raw plain-text detailed report
+  visualizations/                                           # Plot outputs
+
+visualizations/ contents:
+  qber_evolution_20251123_164618.png      (QBER evolution plot)
+  info_leakage_20251123_164618.png        (Information leakage comparison)
+  detection_roc_20251123_164619.png       (ROC curves for detection tests)
+
+Related Classical Artifacts (for comparison):
+  COMPREHENSIVE_ANALYSIS_RESULTS.md
+  RESULTS_NAVIGATION_GUIDE.md
+  ANALYSIS_FILE_INDEX.txt
+
+Key Strategy Metrics (Qiskit):
+  Baseline QBER: 0.52% (Secure)
+  Intercept-Resend 30%: QBER 8.95% (Detected)
+  Intercept-Resend 50%: QBER 11.89% (Detected, threshold exceeded)
+  PID Adaptive: QBER 8.42% (Undetected)
+  Gradient Adaptive: QBER 8.42% (Undetected)
+  Basis Learning: QBER 9.47% (Undetected)
+  PNS Attack: QBER 0.00% (Undetected, passive)
+  Channel-Adaptive: QBER 17.28% (Detected)
+
+Parameter Sweep (Intercept % -> QBER % / Detected):
+  10% -> 3.24% / NO
+  20% -> 5.24% / YES
+  30% -> 7.37% / NO
+  40% -> 8.24% / NO
+  50% -> 11.35% / YES
+  60% -> 20.86% / YES
+  70% -> 17.28% / YES
+  80% -> 22.40% / YES
+
+Security Gaps:
+  - Sub-threshold adaptive strategies evade statistical multi-test
+  - Passive PNS remains entirely invisible (requires decoy states)
+
+Recommended Next Artifacts:
+  CLASSICAL_VS_QISKIT_COMPARISON.md
+  QISKIT_RESULTS_NAVIGATION_GUIDE.md
+
+End of Index.

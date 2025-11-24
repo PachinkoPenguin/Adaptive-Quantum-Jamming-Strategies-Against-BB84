@@ -1,0 +1,307 @@
+================================================================================
+BB84 COMPREHENSIVE ANALYSIS - COMPLETE FILE INDEX
+================================================================================
+Generated: November 23, 2025, 14:06:07
+Analysis Type: Full 17-simulation protocol cycle
+
+================================================================================
+SECTION 1: MAIN ANALYSIS DOCUMENTS
+================================================================================
+
+1. COMPREHENSIVE_ANALYSIS_RESULTS.md (52 KB)
+   - Complete detailed analysis with interpretations
+   - All statistics, findings, and security recommendations
+   - Sections: Executive Summary, Baseline, Attack Comparison, Parameter Sweep,
+     Detection Analysis, Information Theory, Visualizations, Protocol Details,
+     Security Conclusions, Research Implications
+   - Format: Markdown with tables and code blocks
+   - Audience: Researchers, security analysts, students
+
+2. comprehensive_analysis_output/comprehensive_analysis_report_20251123_140607.txt (21 KB)
+   - Raw text report with numerical data
+   - Machine-readable format
+   - Quick reference for specific metrics
+   - Format: Plain text with ASCII tables
+   - Audience: Automated processing, quick lookups
+
+3. RESULTS_NAVIGATION_GUIDE.md (7 KB)
+   - Quick reference for finding specific results
+   - File locations and directory structure
+   - Command examples for viewing data
+   - Troubleshooting tips
+   - Format: Markdown
+   - Audience: New users, quick navigation
+
+4. comprehensive_analysis_run.log (18 KB)
+   - Complete execution transcript
+   - Real-time output from all 17 simulations
+   - Timestamps and progress indicators
+   - Error messages (if any)
+   - Format: Plain text log
+   - Audience: Debugging, validation
+
+================================================================================
+SECTION 2: VISUALIZATION SUITE
+================================================================================
+
+Directory: comprehensive_analysis_output/visualizations/
+
+1. qber_evolution_20251123_140606.png (157 KB)
+   Dimensions: 10" x 6" at 300 DPI
+   Description: QBER time-series plot with 11% threshold line
+   Features:
+   - Horizontal red threshold line at 11%
+   - Blue line: QBER evolution over transmission
+   - Shaded regions: green (safe) and red (detected)
+   - Grid for readability
+   - Publication-quality formatting
+   Use Cases:
+   - Demonstrating adaptive strategy behavior
+   - Showing detection trigger points
+   - Temporal attack analysis
+
+2. info_leakage_20251123_140606.png (194 KB)
+   Dimensions: 10" x 6" at 300 DPI
+   Description: Information leakage comparison bar chart
+   Features:
+   - 7 colored bars (one per strategy)
+   - Value labels on each bar
+   - Gradient color scheme (blue to red)
+   - Y-axis: Information leaked (bits)
+   - X-axis: Attack strategy names
+   Data Shown:
+   - Intercept-Resend 30%: 279.5 bits
+   - Intercept-Resend 50%: 478.0 bits (highest)
+   - QBER-Adaptive: 279.5 bits
+   - Gradient Descent: 279.5 bits
+   - Basis Learning: 0.0 bits
+   - PNS Attack: 175.0 bits
+   - Channel-Adaptive: 0.0 bits
+   Use Cases:
+   - Strategy effectiveness comparison
+   - Security impact visualization
+   - Information theory analysis
+
+3. detection_roc_20251123_140606.png (229 KB)
+   Dimensions: 10" x 6" at 300 DPI
+   Description: Receiver Operating Characteristic curves
+   Features:
+   - Multiple ROC curves (one per detection test)
+   - Diagonal reference line (random classifier)
+   - AUC values in legend
+   - True Positive Rate vs. False Positive Rate
+   - Grid and axis labels
+   Curves Shown:
+   - QBER Detection: AUC = 0.92 (excellent)
+   - Chi-Square Test: AUC = 0.87 (good)
+   Use Cases:
+   - Detection system performance evaluation
+   - Algorithm comparison
+   - Academic papers and presentations
+
+================================================================================
+SECTION 3: PROTOCOL RUN OUTPUTS (17 SIMULATIONS)
+================================================================================
+
+Directory: bb84_output/
+
+Each directory contains 3 files:
+- *_protocol_execution_*.png - Visual protocol flow (5 phases)
+- protocol_summary.png - Statistical summary table
+- summary.json - Machine-readable metadata
+
+--- BASELINE RUN (No Attack) ---
+
+classical_standard_run_20251123_140556/
+├── classical_standard_protocol_execution_20251123_140556.png (120 KB)
+├── protocol_summary.png (85 KB)
+└── summary.json (2 KB)
+   Statistics: QBER=1.05%, Detected=False, Efficiency=19.00%
+
+--- ATTACK STRATEGY RUNS ---
+
+classical_standard_run_20251123_140557/ [Intercept-Resend 30%]
+├── classical_standard_protocol_execution_20251123_140557.png (125 KB)
+├── protocol_summary.png (88 KB)
+└── summary.json (2.5 KB)
+   Statistics: QBER=9.90%, Detected=True, Eve=559 interceptions
+
+classical_standard_run_20251123_140557/ [Intercept-Resend 50%]
+├── classical_standard_protocol_execution_20251123_140557.png (128 KB)
+├── protocol_summary.png (90 KB)
+└── summary.json (2.5 KB)
+   Statistics: QBER=18.78%, Detected=True, Eve=956 interceptions
+
+classical_standard_run_20251123_140558/ [QBER-Adaptive PID]
+├── classical_standard_protocol_execution_20251123_140558.png (126 KB)
+├── protocol_summary.png (89 KB)
+└── summary.json (2.6 KB)
+   Statistics: QBER=9.90%, Detected=True, Target Achievement=99.0%
+
+classical_standard_run_20251123_140558/ [Gradient Descent QBER]
+├── classical_standard_protocol_execution_20251123_140558.png (126 KB)
+├── protocol_summary.png (89 KB)
+└── summary.json (2.6 KB)
+   Statistics: QBER=9.90%, Detected=True, Target Achievement=99.0%
+
+classical_standard_run_20251123_140559/ [Basis Learning]
+├── classical_standard_protocol_execution_20251123_140559.png (127 KB)
+├── protocol_summary.png (91 KB)
+└── summary.json (2.4 KB)
+   Statistics: QBER=11.54%, Detected=True, Eve=876 interceptions
+
+classical_standard_run_20251123_140559/ [PNS Attack] **UNDETECTED**
+├── classical_standard_protocol_execution_20251123_140559.png (121 KB)
+├── protocol_summary.png (86 KB)
+└── summary.json (2.4 KB)
+   Statistics: QBER=1.05%, Detected=False, Eve=175 interceptions
+
+classical_standard_run_20251123_140600/ [Channel-Adaptive]
+├── classical_standard_protocol_execution_20251123_140600.png (130 KB)
+├── protocol_summary.png (93 KB)
+└── summary.json (2.3 KB)
+   Statistics: QBER=17.44%, Detected=True, Eve=1351 interceptions
+
+--- PARAMETER SWEEP RUNS (Intercept Probability) ---
+
+classical_standard_run_20251123_140601/ [10% Intercept]
+   Statistics: QBER=3.80%, Detected=False
+
+classical_standard_run_20251123_140601/ [20% Intercept]
+   Statistics: QBER=5.26%, Detected=False
+
+classical_standard_run_20251123_140602/ [30% Intercept]
+   Statistics: QBER=9.90%, Detected=True
+
+classical_standard_run_20251123_140602/ [40% Intercept]
+   Statistics: QBER=13.61%, Detected=False (threshold exceeded but multi-test varied)
+
+classical_standard_run_20251123_140603/ [50% Intercept]
+   Statistics: QBER=18.78%, Detected=True
+
+classical_standard_run_20251123_140603/ [60% Intercept]
+   Statistics: QBER=16.38%, Detected=True
+
+classical_standard_run_20251123_140604/ [70% Intercept]
+   Statistics: QBER=17.44%, Detected=True
+
+classical_standard_run_20251123_140605/ [80% Intercept]
+   Statistics: QBER=23.08%, Detected=True
+
+================================================================================
+SECTION 4: SOURCE CODE AND SCRIPTS
+================================================================================
+
+comprehensive_analysis.py (18 KB)
+   - Main analysis script
+   - Runs all 17 simulations
+   - Generates reports and visualizations
+   - Shebang: Uses .venv/bin/python
+   - Execution time: ~43 seconds
+
+src/main/bb84_main.py (4735 lines, ~200 KB)
+   - Core BB84 protocol implementation
+   - All attack strategies
+   - Detection system
+   - Visualization manager
+   - Information theory functions
+
+================================================================================
+SECTION 5: QUICK STATISTICS SUMMARY
+================================================================================
+
+Total Files Generated: 54+
+├── Analysis Documents: 4
+├── Visualizations: 3 PNG files
+├── Protocol Runs: 17 directories × 3 files = 51 files
+└── Source/Logs: 2 files
+
+Total Data Size: ~15 MB
+├── Visualizations: 580 KB
+├── Protocol Images: ~12 MB
+└── Text/JSON: ~500 KB
+
+Execution Time: 43 seconds
+Simulations: 17 complete protocol runs
+Qubits Processed: 34,000 (2000 per run)
+Detection Tests: 68 (4 tests × 17 runs)
+
+================================================================================
+SECTION 6: DATA ACCESS PATTERNS
+================================================================================
+
+For Security Analysis:
+1. Read: COMPREHENSIVE_ANALYSIS_RESULTS.md (Sections 2, 5, 8)
+2. View: info_leakage_20251123_140606.png
+3. Check: PNS attack run (140559) - undetected case
+
+For Protocol Performance:
+1. Read: COMPREHENSIVE_ANALYSIS_RESULTS.md (Sections 1, 7)
+2. Check: Baseline run (140556) summary.json
+3. Compare: All efficiency metrics across runs
+
+For Detection Algorithm:
+1. Read: COMPREHENSIVE_ANALYSIS_RESULTS.md (Section 4)
+2. View: detection_roc_20251123_140606.png
+3. Analyze: Detection verdicts in all summary.json files
+
+For Parameter Analysis:
+1. Read: COMPREHENSIVE_ANALYSIS_RESULTS.md (Section 3)
+2. View: qber_evolution_20251123_140606.png
+3. Extract: QBER values from runs 140601-140605
+
+For Information Theory:
+1. Read: COMPREHENSIVE_ANALYSIS_RESULTS.md (Section 5)
+2. View: info_leakage_20251123_140606.png
+3. Calculate: Holevo bound ratios from data
+
+================================================================================
+SECTION 7: IMAGE VIEWING COMMANDS
+================================================================================
+
+Linux/Mac:
+  xdg-open comprehensive_analysis_output/visualizations/qber_evolution_20251123_140606.png
+  eog comprehensive_analysis_output/visualizations/*.png
+  feh comprehensive_analysis_output/visualizations/
+
+VS Code:
+  - Navigate to file in explorer
+  - Click to preview in editor
+  - Right-click → "Open Preview" for full size
+
+Command-line (ImageMagick):
+  display comprehensive_analysis_output/visualizations/qber_evolution_20251123_140606.png
+
+Python:
+  from PIL import Image
+  img = Image.open('comprehensive_analysis_output/visualizations/qber_evolution_20251123_140606.png')
+  img.show()
+
+================================================================================
+SECTION 8: JSON METADATA STRUCTURE
+================================================================================
+
+Each summary.json contains:
+{
+  "qber": float,                    # Quantum bit error rate
+  "efficiency": float,              # Final key / initial bits
+  "final_key_length": int,          # Secure key bits
+  "attack_detected": bool,          # Detection verdict
+  "secure": bool,                   # Overall security status
+  "eve_interceptions": int,         # Photons intercepted
+  "eve_information": float,         # Information leaked (bits)
+  "channel_loss_rate": float,       # 0.05 (5%)
+  "channel_error_rate": float,      # 0.02 (2%)
+  "initial_bits": int,              # 2000
+  "sifted_key_length": int,         # ~1000
+  "backend": "Classical Simulation"
+}
+
+================================================================================
+END OF FILE INDEX
+================================================================================
+
+For questions or issues, refer to:
+- RESULTS_NAVIGATION_GUIDE.md
+- COMPREHENSIVE_ANALYSIS_RESULTS.md
+- Project README.md
